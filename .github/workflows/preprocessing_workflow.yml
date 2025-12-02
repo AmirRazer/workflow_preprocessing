@@ -36,7 +36,7 @@ jobs:
       # Ini akan menghasilkan file CSV baru di folder preprocessing
       - name: Run Preprocessing Script
         run: |
-          cd Eksperimen_SML_Amir/preprocessing
+          cd preprocessing
           python automate_amir.py
 
       # 5. Commit & Push Dataset Baru 
@@ -47,8 +47,8 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
           # Add file CSV hasil preprocessing
-          git add Eksperimen_SML_Amir/preprocessing/train_data_processed.csv
-          git add Eksperimen_SML_Amir/preprocessing/test_data_processed.csv
+          git add preprocessing/train_data_processed.csv
+          git add preprocessing/test_data_processed.csv
           
           # Commit (pakai logika OR || echo agar tidak error jika tidak ada perubahan)
           git commit -m "Auto-update processed datasets [skip ci]" || echo "No changes to commit"
