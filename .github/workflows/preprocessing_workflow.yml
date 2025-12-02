@@ -1,0 +1,57 @@
+name: Automasi Preprocessing 
+on:
+  push:
+    branches:
+      - main
+    # [PENTING] Mencegah Infinite Loop
+    # Workflow TIDAK akan jalan kalau yang berubah cuma file output CSV
+    paths-ignore:
+      - '**/train_data_processed.csv'
+      - '**/test_data_processed.csv'
+
+jobs:
+  preprocessing:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Ambil kode repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Pakai token bawaan GitHub biar aman
+
+      # 2. Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # 3. Install Library yang dibutuhkan automate_amir.py
+      # (Pastikan file requirements.txt sudah ada isinya: pandas, scikit-learn, dll)
+      - name: Install Dependencies
+        run: |
+          pip install pandas scikit-learn numpy seaborn matplotlib
+
+      # 4. Jalankan Script Preprocessing
+      # Ini akan menghasilkan file CSV baru di folder preprocessing
+      - name: Run Preprocessing Script
+        run: |
+          cd Eksperimen_SML_Amir/preprocessing
+          python automate_amir.py
+
+      # 5. Commit & Push Dataset Baru 
+      - name: Commit and Push Processed Data
+        run: |
+          # Konfigurasi Bot GitHub (Bukan user pribadi, biar rapi)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Add file CSV hasil preprocessing
+          git add Eksperimen_SML_Amir/preprocessing/train_data_processed.csv
+          git add Eksperimen_SML_Amir/preprocessing/test_data_processed.csv
+          
+          # Commit (pakai logika OR || echo agar tidak error jika tidak ada perubahan)
+          git commit -m "Auto-update processed datasets [skip ci]" || echo "No changes to commit"
+          
+          # Push balik ke branch main
+          git push origin main
