@@ -144,7 +144,7 @@ def apply_pca_2(df_train, df_test):
     df_test.drop(columns=PCA_COLS_2, inplace=True)
     
     return df_train, df_test
-
+#Ini save data ke csv nya
 def save_processed_data(X_train, X_test, y_train, y_test):
     print("Menyimpan data final...")
     
